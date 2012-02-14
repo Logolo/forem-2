@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Forem::Forum do
   before(:each) do
-    category = Factory(:category)
+    category = Fabricate(:category)
     @attr = {
       :title => "A forum",
       :description => "My sweet forum of goodness",
@@ -35,11 +35,11 @@ describe Forem::Forum do
   describe "helper methods" do
     # Regression tests + tests related to fix for #42
     context "last_post" do
-      let!(:visible_topic) { FactoryGirl.create(:topic, :forum => @forum) }
-      let!(:hidden_topic) { FactoryGirl.create(:topic, :forum => @forum, :hidden => true) }
+      let!(:visible_topic) { Fabricate(:topic, :forum => @forum) }
+      let!(:hidden_topic) { Fabricate(:topic, :forum => @forum, :hidden => true) }
 
-      let(:user) { FactoryGirl.create(:user) }
-      let(:admin) { FactoryGirl.create(:admin) }
+      let(:user) { Fabricate(:user) }
+      let(:admin) { Fabricate(:admin) }
 
       it "finds the last visible post" do
         @forum.last_visible_post.should == visible_topic.posts.last

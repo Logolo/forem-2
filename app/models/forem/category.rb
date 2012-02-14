@@ -1,6 +1,10 @@
 module Forem
-  class Category < ActiveRecord::Base
-    has_many :forums
+  class Category
+    include Mongoid::Document
+    include Mongoid::Timestamps
+
+    field :name
+    has_many :forums, :class_name => 'Forem::Forum'
     validates :name, :presence => true
 
     def to_s

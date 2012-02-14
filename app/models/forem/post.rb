@@ -1,16 +1,18 @@
 module Forem
-  class Post < ActiveRecord::Base
-    belongs_to :topic
-    belongs_to :user, :class_name => Forem.user_class.to_s
-    belongs_to :reply_to, :class_name => "Post"
+  class Post
+    include Mongoid::Document
+    include Mongoid::Timestamps
 
-    has_many :replies, :class_name => "Post",
-                       :foreign_key => "reply_to_id",
-                       :dependent => :nullify
+    field :text
+
+    belongs_to :topic, :class_name => 'Forem::Topic'
+    belongs_to :user, :class_name => Forem.user_class.to_s
+    belongs_to :reply_to, :class_name => "Forem::Post"
+    has_many :replies, :class_name => "Forem::Post", :dependent => :nullify
 
     delegate :forum, :to => :topic
 
-    scope :by_created_at, order("created_at asc")
+    scope :by_created_at, order_by([[:created_at, :asc]])
 
     validates :text, :presence => true
   	after_create :subscribe_replier

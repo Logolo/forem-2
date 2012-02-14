@@ -1,13 +1,20 @@
 module Forem
-  class Topic < ActiveRecord::Base
+  class Topic
+    include Mongoid::Document
+    include Mongoid::Timestamps
+
     attr_protected :pinned, :locked
 
-    belongs_to :forum
-    has_many   :views
-    has_many   :subscriptions
+    field :subject
+    field :locked, type: Boolean, default: false
+    field :pinned, type: Boolean, default: false
+    field :hidden, type: Boolean, default: false
+    belongs_to :forum, :class_name => 'Forem::Forum'
     belongs_to :user, :class_name => Forem.user_class.to_s
+    embeds_many :views, :class_name => 'Forem::View'
+    embeds_many :subscriptions, :class_name => 'Forem::Subscription'
 
-    has_many :posts, :dependent => :destroy, :order => "created_at ASC"
+    has_many :posts, :class_name => 'Forem::Post'
     accepts_nested_attributes_for :posts
 
     validates :subject, :presence => true
@@ -16,12 +23,9 @@ module Forem
     after_create :subscribe_poster
 
     scope :visible, where(:hidden => false)
-    scope :by_pinned, order('forem_topics.pinned DESC, forem_topics.id')
-    scope :by_most_recent_post, joins(:posts).select("DISTINCT forem_posts.topic_id, forem_topics.*, forem_posts.created_at").order('forem_posts.created_at DESC, forem_topics.id')
-    scope :by_pinned_or_most_recent_post, includes(:posts).
-                                          order('forem_topics.pinned DESC').
-                                          order('forem_posts.created_at DESC').
-                                          order('forem_topics.id')
+    scope :by_pinned, order_by([[:pinned, :desc], [:id, :asc]])
+    scope :by_most_recent_post, order_by([['posts.created_at', :desc]])
+    scope :by_pinned_or_most_recent_post, order_by([[:pinned, :desc],['posts.created_at', :desc]])
 
     def to_s
       subject
@@ -77,7 +81,7 @@ module Forem
     end
 
 		def subscriber?(user_id)
-			subscriptions.exists?(:subscriber_id => user_id)
+			subscriptions.where(:subscriber_id => user_id).any?
 		end
 
 		def subscription_for user_id
