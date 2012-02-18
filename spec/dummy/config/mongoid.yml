@@ -1,0 +1,26 @@
+development:
+  host: localhost
+  database: forem_mongoid_development
+  allow_dynamic_fields: false
+  identity_map_enabled: true
+  logger: false  
+
+test:
+  host: localhost
+  database: forem_mongoid_test
+  allow_dynamic_fields: false
+  identity_map_enabled: true
+  logger: false  
+
+# set these environment variables on your prod server
+production:
+  uri: <%= ENV['MONGOLAB_URI'] %>
+  allow_dynamic_fields: false
+  identity_map_enabled: true
+  logger: false  
+  # slaves:
+  #   - host: slave1.local
+  #     port: 27018
+  #   - host: slave2.local
+  #     port: 27019
+ 
