@@ -59,7 +59,7 @@ module Forem
 
 }
 
-        inject_into_file("#{Rails.root}/app/controllers/application_controller.rb",
+        inject_into_file("#{Rails.root}/../../app/controllers/application_controller.rb",
                          forem_user_method,
                          :after => "ActionController::Base\n")
 
