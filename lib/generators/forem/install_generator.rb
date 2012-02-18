@@ -19,15 +19,19 @@ module Forem
       def add_forem_admin_migration
         # Is there a cleaner way to do this?
         if options["user-class"]
+          puts "Class of item passed as argument #{options["user-class"].class}"
           @user_class = options["user-class"]
         else
           @user_class = ask("What is your user class called? [User]")
+          puts "Class of item passed from prompt #{@user_class.class}"
         end
 
         if @user_class.blank?
           @user_class = 'User'
+          puts "Class of item set when blank #{@user_class.class}"
         else
           @user_class = @user_class
+          puts "Class of item set when passed #{@user_class.class}"
         end
 
         puts "Adding forem_admin migration..."
