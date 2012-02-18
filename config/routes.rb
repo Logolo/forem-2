@@ -1,4 +1,5 @@
 Forem::Engine.routes.draw do
+  mount Forem::Engine, :at => "/forums"
   root :to => "forums#index"
 
   resources :forums, :only => [:index, :show] do

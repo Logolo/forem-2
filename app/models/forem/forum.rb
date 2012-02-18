@@ -8,6 +8,7 @@ module Forem
     has_many :topics, :class_name => 'Forem::Topic', :dependent => :destroy
     #has_many :posts, :through => :topics, :dependent => :destroy
     #has_many :views, :through => :topics, :dependent => :destroy
+  
 
     validates :category_id, :presence => true
     validates :title, :presence => true
