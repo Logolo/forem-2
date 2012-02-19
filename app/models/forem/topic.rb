@@ -55,14 +55,14 @@ module Forem
     end
 
     def view_for(user)
-      views.find_by_user_id(user.id)
+      views.where(user_id: user.id).first
     end
 
     # Track when users last viewed topics
     def register_view_by(user)
       if user
-        view = views.find_or_create_by_user_id(user.id)
-        view.increment!("count")
+        view = views.find_or_create_by(user: user, topic: self)
+#        view.increment!("count")
       end
     end
     

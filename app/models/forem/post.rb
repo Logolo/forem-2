@@ -15,8 +15,8 @@ module Forem
     scope :by_created_at, order_by([[:created_at, :asc]])
 
     validates :text, :presence => true
-  	after_create :subscribe_replier
-  	after_create :email_topic_subscribers
+#  	after_create :subscribe_replier
+#  	after_create :email_topic_subscribers
 
     def owner_or_admin?(other_user)
       self.user == other_user || other_user.forem_admin?

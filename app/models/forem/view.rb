@@ -7,6 +7,6 @@ module Forem
     embedded_in :topic, :class_name => 'Forem::Topic'
     belongs_to :user, :class_name => Forem.user_class.to_s
 
-    validates :topic_id, :presence => true
+#    validates :topic, :presence => true
   end
 end
