@@ -14,10 +14,14 @@ module Forem
     validates :title, :presence => true
     validates :description, :presence => true
 
-    #def posts
-    #  # TODO: this is probably a bad idea
-    #  self.all.map(&:topics).flatten.map(&:posts).flatten
-    #end
+    def count_of_posts
+      topics.inject(0) {|sum, topic| topic.posts.count + sum }    
+    end
+
+    def count_of_views
+      topics.inject(0) {|sum, topic| topic.views.count + sum }    
+    end
+    
 
     def last_post_for(forem_user)
       last_post = self.topics.order_by([['posts.created_at', :desc]]).first.posts.first
