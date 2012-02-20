@@ -21,7 +21,7 @@ module Forem
       authorize! :create_topic, @forum
       @topic = @forum.topics.build(params[:topic])
       @topic.user = forem_user
-      if @topic.save
+      if @topic.save && @topic.posts.first.save
         flash[:notice] = t("forem.topic.created")
         redirect_to [@forum, @topic]
       else
