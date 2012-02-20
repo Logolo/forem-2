@@ -7,4 +7,5 @@ unless user.nil?
                                :user_id => user.id, 
                                :subject => "Welcome to forem!", 
                                :posts_attributes => [{:text => "Hello World", :user_id => user.id}])
+  topic.posts.first.save!
 end
