@@ -22,7 +22,6 @@ module Forem
       topics.inject(0) {|sum, topic| topic.views.count + sum }    
     end
     
-
     def last_post_for(forem_user)
       last_post = self.topics.order_by([['posts.created_at', :desc]]).first.posts.first
       forem_user && forem_user.forem_admin? ? last_post : last_visible_post
