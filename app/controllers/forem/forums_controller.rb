@@ -8,7 +8,13 @@ module Forem
     end
 
     def show
-      @forum = Forem::Forum.find(params[:id])
+      if params[:id].length < 8 # Our token length is set to 5, but this gives us room to grow before we see bugs. 
+        @group = Group.find_by_token(params[:id])
+        @forum = Forem::Forum.find(@group.forum_id)    
+      else
+        @group = Group.where(:forum_id => params[:id]).first
+        @forum = Forem::Forum.find(params[:id])
+      end
       @topics = forem_admin? ? @forum.topics : @forum.topics.visible
       @topics = @topics.by_pinned_or_most_recent_post.page(params[:page]).per(20)
     end
