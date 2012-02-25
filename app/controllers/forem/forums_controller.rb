@@ -1,6 +1,6 @@
 module Forem
   class ForumsController < Forem::ApplicationController
-    load_and_authorize_resource :only => :show
+#    load_and_authorize_resource :only => :show
     helper 'forem/topics'
 
     def index
@@ -12,8 +12,13 @@ module Forem
         @group = Group.find_by_token(params[:id])
         @forum = Forem::Forum.find(@group.forum_id)    
       else
-        @group = Group.where(:forum_id => params[:id]).first
-        @forum = Forem::Forum.find(params[:id])
+        if Group.count(:conditions => {:id => params[:id]}) > 0
+          @group = Group.find(params[:id])
+          @forum = Forem::Forum.find(@group.forum_id)
+        else
+          @forum = Forem::Forum.find(params[:id])  
+          @group = Group.where(:forum_id => @forum.id).first 
+        end       
       end
       @topics = forem_admin? ? @forum.topics : @forum.topics.visible
       @topics = @topics.by_pinned_or_most_recent_post.page(params[:page]).per(20)
