@@ -13,6 +13,7 @@ module Forem
 
     def new
       authorize! :create_topic, @forum
+      @group = Group.where(:forum_id => @forum.id).first
       @topic = @forum.topics.build
       @topic.posts.build
     end
