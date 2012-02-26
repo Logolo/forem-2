@@ -1,3 +1,3 @@
 Forem.user_class = "User" 
-Forem.email_from_address = "please-change-me@example.com"
+Forem.email_from_address = "rotodraft_forum@example.com"
 Forem.user_profile_links = false
