@@ -5,6 +5,8 @@ module Forem
 
     def new
       authorize! :reply, @topic
+
+      @group = Group.where(:forum_id => @topic.forum.id).first
       @post = @topic.posts.build
       if params[:quote]
         @reply_to = @topic.posts.find(params[:reply_to_id])
