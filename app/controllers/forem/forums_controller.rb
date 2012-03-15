@@ -1,5 +1,6 @@
 module Forem
   class ForumsController < Forem::ApplicationController
+#TODO reenable this
 #    load_and_authorize_resource :only => :show
     helper 'forem/topics'
 
@@ -20,6 +21,7 @@ module Forem
           @group = Group.where(:forum_id => @forum.id).first 
         end       
       end
+
       @topics = forem_admin? ? @forum.topics : @forum.topics.visible
       @topics = @topics.by_pinned_or_most_recent_post.page(params[:page]).per(10)
     end
