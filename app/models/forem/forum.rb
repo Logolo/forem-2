@@ -6,22 +6,22 @@ module Forem
     field :description
     belongs_to :category, :class_name => 'Forem::Category'
     has_many :topics, :class_name => 'Forem::Topic', :dependent => :destroy
-    #has_many :posts, :through => :topics, :dependent => :destroy
-    #has_many :views, :through => :topics, :dependent => :destroy
-  
+    has_many :posts, :through => :topics, :dependent => :destroy
+    has_many :views, :through => :topics, :dependent => :destroy
+
 
     validates :category_id, :presence => true
     validates :title, :presence => true
     validates :description, :presence => true
 
     def count_of_posts
-      topics.inject(0) {|sum, topic| topic.posts.count + sum }    
+      topics.inject(0) {|sum, topic| topic.posts.count + sum }
     end
 
     def count_of_views
-      topics.inject(0) {|sum, topic| topic.views.count + sum }    
+      topics.inject(0) {|sum, topic| topic.views.count + sum }
     end
-    
+
     def last_post_for(forem_user)
       last_post = self.topics.order_by([['posts.created_at', :desc]]).first.posts.first
       forem_user && forem_user.forem_admin? ? last_post : last_visible_post
