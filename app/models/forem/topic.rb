@@ -11,7 +11,7 @@ module Forem
     field :hidden, type: Boolean, default: false
     belongs_to :forum, :class_name => 'Forem::Forum'
     belongs_to :user, :class_name => Forem.user_class.to_s
-    embeds_many :views, :class_name => 'Forem::View'
+    has_many :views, :class_name => 'Forem::View'
     embeds_many :subscriptions, :class_name => 'Forem::Subscription'
 
     has_many :posts, :class_name => 'Forem::Post'
@@ -70,13 +70,13 @@ module Forem
 #        view.increment!("count")
       end
     end
-    
+
     def subscribe_poster
       subscribe_user(self.user_id)
     end
 
     def subscribe_user(user_id)
-      if user_id && !subscriber?(user_id)         
+      if user_id && !subscriber?(user_id)
 				subscriptions.create!(:subscriber_id => user_id)
       end
     end
