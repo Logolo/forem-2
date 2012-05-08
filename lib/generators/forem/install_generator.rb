@@ -16,7 +16,7 @@ module Forem
         end
       end
 
-      def add_forem_admin_migration
+      def determine_user_class
         # Is there a cleaner way to do this?
         if options["user-class"]
           puts "Class of item passed as argument #{options["user-class"].class}"
@@ -33,13 +33,24 @@ module Forem
           @user_class = @user_class
           puts "Class of item set when passed #{@user_class.class}"
         end
+      end
+
+
+      def add_forem_admin_migration
 
         puts "Adding forem_admin migration..."
 
-#        last_migration = Dir[Rails.root + "db/migrate/*.rb"].sort.last.split("/").last
-#        current_migration_number = /^(\d+)_/.match(last_migration)[1]
-#        next_migration_number = current_migration_number.to_i + 1
-#        template "forem_admin_migration.rb", "#{Rails.root}/db/migrate/#{next_migration_number}_add_forem_admin.rb"
+        template "forem_admin_migration.rb", "#{Rails.root}/db/migrate/#{next_migration_number}_add_forem_admin.rb"
+      end
+
+      def add_forem_state_migration
+        puts "Adding forem_state migration..."
+        template "forem_state_migration.rb", "#{Rails.root}/db/migrate/#{next_migration_number}_add_forem_state.rb"
+      end
+
+      def add_forem_autosubscribe_migration
+        puts "Adding forem_auto_subscribe migration..."
+        template "forem_auto_subscribe_migration.rb", "#{Rails.root}/db/migrate/#{next_migration_number}_add_forem_auto_subscribe_to_user.rb"
       end
 
       def determine_current_user_helper
@@ -110,7 +121,7 @@ Here's what happened:\n\n}
    This lets Forem know what the current user of your application is.\n")
         output += step("A new file was created at config/initializers/forem.rb
    This is where you put Forem's configuration settings.\n")
-        
+
         unless options["no-migrate"]
 output += step("`rake db:migrate` was run, running all the migrations against your database.\n")
         output += step("Seed forum and topic were loaded into your database.\n")
@@ -140,6 +151,11 @@ output += step("`rake db:migrate` was run, running all the migrations against yo
         @user_class
       end
 
+      def next_migration_number
+        last_migration = Dir[Rails.root + "db/migrate/*.rb"].sort.last.split("/").last
+        current_migration_number = /^(\d+)_/.match(last_migration)[1]
+        current_migration_number.to_i + 1
+      end
     end
   end
 end

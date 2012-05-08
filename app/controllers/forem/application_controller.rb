@@ -16,7 +16,7 @@ class Forem::ApplicationController < ApplicationController
     if !forem_user
       session["user_return_to"] = request.fullpath
       flash.alert = t("forem.errors.not_signed_in")
-      redirect_to main_app.sign_in_path
+      redirect_to Forem.sign_in_path || main_app.sign_in_path
     end
   end
 
@@ -24,5 +24,10 @@ class Forem::ApplicationController < ApplicationController
     forem_user && forem_user.forem_admin?
   end
   helper_method :forem_admin?
+
+  def forem_admin_or_moderator?(forum)
+    forem_user && (forem_user.forem_admin? || forum.moderator?(forem_user))
+  end
+  helper_method :forem_admin_or_moderator?
 
 end

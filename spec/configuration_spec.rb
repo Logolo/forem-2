@@ -21,6 +21,17 @@ describe Forem do
     end
   end
 
+
+  describe ".avatar_user_method" do
+    it "can be set and retrieved" do
+      Forem.avatar_user_method = "foo"
+      Forem.avatar_user_method.should eq("foo")
+
+      Forem.avatar_user_method = nil
+      Forem.avatar_user_method.should be_nil
+    end
+  end
+
   describe ".email_from_address" do
     it "can be set and retrieved" do
       Forem.email_from_address = "foo"
@@ -28,6 +39,16 @@ describe Forem do
 
       Forem.email_from_address = nil
       Forem.email_from_address.should be_nil
+    end
+  end
+
+  describe ".sign_in_path" do
+    it "can be set and retrieved" do
+      Forem.sign_in_path = "users/sign_in"
+      Forem.sign_in_path.should eq("users/sign_in")
+
+      Forem.sign_in_path =  nil
+      Forem.sign_in_path.should be_nil
     end
   end
 end

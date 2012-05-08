@@ -2,8 +2,17 @@ module Forem
   class Topic
     include Mongoid::Document
     include Mongoid::Timestamps
+    include Workflow
 
-    attr_protected :pinned, :locked
+    workflow_column :state
+    workflow do
+      state :pending_review do
+        event :spam,    :transitions_to => :spam
+        event :approve, :transitions_to => :approved
+      end
+      state :spam
+      state :approved
+    end
 
     field :subject
     field :locked, type: Boolean, default: false
@@ -11,21 +20,59 @@ module Forem
     field :hidden, type: Boolean, default: false
     belongs_to :forum, :class_name => 'Forem::Forum'
     belongs_to :user, :class_name => Forem.user_class.to_s
-    has_many :views, :class_name => 'Forem::View'
-    embeds_many :subscriptions, :class_name => 'Forem::Subscription'
+    has_many   :subscriptions
+    has_many :posts, :class_name => 'Forem::Post', :dependant => destroy
 
-    has_many :posts, :class_name => 'Forem::Post'
+    attr_protected :pinned, :locked
+
     accepts_nested_attributes_for :posts
 
     validates :subject, :presence => true
 
-    before_save :set_first_post_user
+    before_save  :set_first_post_user
+    after_save   :approve_user_and_posts, :if => :approved?
     after_create :subscribe_poster
+    after_create :skip_pending_review_if_user_approved
 
-    scope :visible, where(:hidden => false)
-    scope :by_pinned, order_by([[:pinned, :desc], [:id, :asc]])
-    scope :by_most_recent_post, order_by([['posts.created_at', :desc]])
-    scope :by_pinned_or_most_recent_post, order_by([[:pinned, :desc],['posts.created_at', :desc]])
+    class << self
+      def visible
+        where(:hidden => false)
+      end
+
+      def by_pinned
+        order('forem_topics.pinned DESC').
+        order('forem_topics.id')
+      end
+
+      def by_most_recent_post
+        order('forem_topics.last_post_at DESC').
+        order('forem_topics.id')
+      end
+
+      def by_pinned_or_most_recent_post
+        order('forem_topics.pinned DESC').
+        order('forem_topics.last_post_at DESC').
+        order('forem_topics.id')
+      end
+
+      def pending_review
+        where(:state => 'pending_review')
+      end
+
+      def approved
+        where(:state => 'approved')
+      end
+
+      def approved_or_pending_review_for(user)
+        if user
+          where("forem_topics.state = ? OR " +
+                "(forem_topics.state = ? AND forem_topics.user_id = ?)",
+                 'approved', 'pending_review', user.id)
+        else
+          approved
+        end
+      end
+    end
 
     def to_s
       subject
@@ -54,21 +101,13 @@ module Forem
       update_attribute(:pinned, false)
     end
 
+    def moderate!(option)
+      send("#{option}!")
+    end
+
     # A Topic cannot be replied to if it's locked.
     def can_be_replied_to?
       !locked?
-    end
-
-    def view_for(user)
-      views.where(user_id: user.id).first
-    end
-
-    # Track when users last viewed topics
-    def register_view_by(user)
-      if user
-        view = views.find_or_create_by(user_id: user.id, topic_id: self.id)
-#        view.increment!("count")
-      end
     end
 
     def subscribe_poster
@@ -77,7 +116,7 @@ module Forem
 
     def subscribe_user(user_id)
       if user_id && !subscriber?(user_id)
-				subscriptions.create!(:subscriber_id => user_id)
+        subscriptions.create!(:subscriber_id => user_id)
       end
     end
 
@@ -85,18 +124,30 @@ module Forem
       subscriptions.where(:subscriber_id => user_id).destroy_all
     end
 
-		def subscriber?(user_id)
-			subscriptions.where(:subscriber_id => user_id).any?
-		end
+    def subscriber?(user_id)
+      subscriptions.exists?(:subscriber_id => user_id)
+    end
 
-		def subscription_for user_id
-			subscriptions.first(:conditions => { :subscriber_id=>user_id })
-		end
+    def subscription_for user_id
+      subscriptions.first(:conditions => { :subscriber_id=>user_id })
+    end
 
     protected
     def set_first_post_user
       post = self.posts.first
       post.user = self.user
+    end
+
+    def skip_pending_review_if_user_approved
+      self.update_attribute(:state, 'approved') if user && user.forem_state == 'approved'
+    end
+
+    def approve_user_and_posts
+      return unless state_changed?
+
+      first_post = self.posts.by_created_at.first
+      first_post.approve! unless first_post.approved?
+      self.user.update_attribute(:forem_state, 'approved') if self.user.forem_state != 'approved'
     end
   end
 end

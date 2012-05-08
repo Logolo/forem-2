@@ -1,8 +1,10 @@
 require 'spec_helper'
 
 describe Forem::Post do
-  let(:post) { FactoryGirl.create(:post, :topic => stub_model(Forem::Topic)) }
-  let(:reply) { FactoryGirl.create(:post, :reply_to => post) }
+  let(:forum) { stub_model(Forem::Forum) }
+  let(:topic) { stub_model(Forem::Topic, :forum => forum) }
+  let(:post) { FactoryGirl.create(:post, :topic => topic) }
+  let(:reply) { FactoryGirl.create(:post, :reply_to => post, :topic => topic) }
 
   context "upon deletion" do
     it "clears the reply_to_id for all replies" do
@@ -14,30 +16,60 @@ describe Forem::Post do
   end
 
   context "after creation" do
-    it "subscribes the current poster" do
+    it "subscribes the current poster if forem_auto_subscribe is set to true" do
       @topic = FactoryGirl.create(:topic)
       @post = FactoryGirl.create(:post, :topic => @topic)
       @topic.subscriptions.last.subscriber.should == @post.user
     end
+    
+    it "doesn't subscribe the current poster if forem_auto_subscribe is set to false" do
+      @topic = FactoryGirl.create(:topic)
+      @post = FactoryGirl.create(:post, :topic => @topic)
+      
+      @user_not_autosubscribed = FactoryGirl.create(:not_autosubscribed)
+      @post = FactoryGirl.build(:approved_post, :topic => @topic, :user => @user_not_autosubscribed)
+      
+      @topic.subscriptions.last.subscriber.should_not == @post.user
+    end
 
-    it "emails subscribers after post creation" do
-      @post = FactoryGirl.build(:post)
+    it "does not email subscribers after post creation if not approved" do
+      @post = FactoryGirl.build(:post, :topic => topic)
+      @post.should_not be_approved
+      @post.should_not_receive(:email_topic_subscribers)
+      @post.save
+    end
+
+    it "only emails subscribers when post is approved" do
+      @post = FactoryGirl.build(:post, :topic => topic)
       @post.should_receive(:email_topic_subscribers)
+      @post.approve!
+    end
+
+    it "does not send out notifications if notifications have already been sent" do
+      @post = FactoryGirl.create(:approved_post, :topic => topic)
+      @post.should_not_receive(:email_topic_subscribers)
       @post.save
     end
 
     it "only emails other subscribers" do
-      @user1 = FactoryGirl.create(:user)
       @user2 = FactoryGirl.create(:user)
       @topic = FactoryGirl.create(:topic)
-      @post = FactoryGirl.create(:post, :topic => @topic, :user => @user2)
-      subs = [ Forem::Subscription.create(:topic => @topic, :subscriber => @user1), Forem::Subscription.create(:topic => @topic, :subscriber => @user2)]
-      @post.topic.stub(:subscriptions).and_return(subs);
-      @post.topic.stub_chain([:subscriptions, :includes]).and_return(subs)
 
-      @post.topic.subscriptions.first.should_receive(:send_notification)
-      @post.topic.subscriptions.last.should_not_receive(:send_notification)
-      @post.email_topic_subscribers
+      Forem::Subscription.any_instance.should_receive(:send_notification).once
+      @post = FactoryGirl.build(:approved_post, :topic => @topic, :user => @user2)
+
+      @post.save!
+    end
+
+    it "sets topics last_post_at value" do
+      topic = FactoryGirl.create(:topic)
+      post1 = FactoryGirl.create(:post, :topic => topic)
+      topic.reload
+      topic.last_post_at.to_s.should == post1.created_at.to_s
+
+      post2 = FactoryGirl.create(:post, :topic => topic)
+      topic.reload
+      topic.last_post_at.to_s.should == post2.created_at.to_s
     end
   end
 
@@ -50,13 +82,6 @@ describe Forem::Post do
       admin = FactoryGirl.create(:admin)
       assert post.owner_or_admin?(post.user)
       assert post.owner_or_admin?(admin)
-    end
-
-    it "subscribes repliers" do
-      user = FactoryGirl.create(:user)
-      post.user = user
-      post.topic.should_receive(:subscribe_user).with(post.user_id)
-      post.subscribe_replier
     end
   end
 end

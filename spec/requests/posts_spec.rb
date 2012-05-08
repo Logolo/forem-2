@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "posts" do
   let(:forum) { FactoryGirl.create(:forum) }
   let(:user) { FactoryGirl.create(:user) }
-  let(:topic) { FactoryGirl.create(:topic, :forum => forum, :user => user) }
+  let(:topic) { FactoryGirl.create(:approved_topic, :forum => forum, :user => user) }
   
   context "not signed in users" do
     it "cannot begin to post a reply" do
@@ -29,6 +29,18 @@ describe "posts" do
       before do
         within(selector_for(:first_post)) do
           click_link("Reply")
+        end
+      end
+
+      context "to a topic with multiple pages" do
+        it "redirects to the last page" do
+          Forem.stub(:per_page).and_return(1)
+
+          fill_in "Text", :with => "Witty and insightful commentary."
+          click_button "Post Reply"         
+
+          page.should have_content("Witty and insightful commentary")
+          page.should_not have_content(topic.posts.first.text)
         end
       end
 
@@ -67,8 +79,8 @@ describe "posts" do
 
     context "editing posts in topics" do
       before do
-        sign_in(user)
-        topic.posts << FactoryGirl.create(:post, :user => FactoryGirl.create(:user, :login => 'other_forem_user', :email => "maryanne@boblaw.com"))
+        other_user = FactoryGirl.create(:user, :login => 'other_forem_user', :email => "maryanne@boblaw.com")
+        topic.posts << FactoryGirl.build(:approved_post, :user => other_user)
         second_post = topic.posts[1]
       end
 
@@ -107,13 +119,9 @@ describe "posts" do
     end
 
     context "deleting posts in topics" do
-      before do
-        sign_in(user)
-      end
-
       context "topic contains two posts" do
         before do
-          topic.posts << FactoryGirl.create(:post, :user => FactoryGirl.create(:user, :login => 'other_forem_user', :email => "maryanne@boblaw.com"))
+          topic.posts << FactoryGirl.build(:post, :user => FactoryGirl.create(:user, :login => 'other_forem_user', :email => "maryanne@boblaw.com"))
 
         end
 

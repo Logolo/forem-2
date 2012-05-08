@@ -3,10 +3,10 @@ require 'spec_helper'
 describe "topics" do
 
   let(:forum) { FactoryGirl.create(:forum) }
-  let(:user) { FactoryGirl.create(:user, :login => 'other_forem_user', :email => "bob@boblaw.com") }
-  let(:topic) { FactoryGirl.create(:topic, :forum => forum, :user => user) }
+  let(:user) { FactoryGirl.create(:user, :login => 'other_forem_user', :email => "bob@boblaw.com", :custom_avatar_url => 'avatar.png') }
+  let(:topic) { FactoryGirl.create(:approved_topic, :forum => forum, :user => user) }
   let(:other_user) { FactoryGirl.create(:user, :login => 'other_forem_user') }
-  let(:other_topic) { FactoryGirl.create(:topic, :subject => 'Another forem topic', :user => other_user, :forum => forum) }
+  let(:other_topic) { FactoryGirl.create(:approved_topic, :subject => 'Another forem topic', :user => other_user, :forum => forum) }
 
   context "not signed in" do
     it "cannot create a new topic" do
@@ -91,7 +91,7 @@ describe "topics" do
 
       # Regression test for #100
       it "can delete topics by others if an admin" do
-        topic.user = Factory(:user) # Assign alternate user
+        topic.user = FactoryGirl.create(:user) # Assign alternate user
         topic.save
 
         user.update_attribute(:forem_admin, true)
@@ -120,7 +120,7 @@ describe "topics" do
           # expect do
           #   visit forum_topic_path(forum, topic)
           # end.to change(view.reload, :count)
-          # 
+          #
           # But instead must go long-form:
 
           view = ::Forem::View.last
@@ -134,7 +134,7 @@ describe "topics" do
 
   context "viewing a topic" do
     let(:topic) do
-      FactoryGirl.create(:topic, :forum => forum, :user => user)
+      FactoryGirl.create(:approved_topic, :forum => forum, :user => user)
     end
 
     it "is free for all" do
@@ -143,9 +143,28 @@ describe "topics" do
       assert_seen(topic.posts.first.text, :within => :post_text)
     end
 
-    it "should show a gravatar" do
+    it "should show an avatar from gravatar" do
       visit forum_topic_path(forum, topic)
-      assert page.has_selector?("div.icon > img[alt='Gravatar']")
+      assert page.has_selector?("div.icon > img[alt='Avatar']")
+    end
+
+    it "should show a custom avatar when set" do
+      Forem.stub(:avatar_user_method => "custom_avatar_url")
+
+      visit forum_topic_path(forum, topic)
+      assert page.has_selector?("div.icon > img[alt='Avatar']")
+    end
+
+    it "should show no avatar with custom method empty" do
+      Forem.stub(:avatar_user_method => "custom_avatar_url")
+
+      visit forum_topic_path(forum, other_topic)
+      assert page.has_no_selector?("div.icon > img[alt='Avatar']")
+    end
+
+    it "should have an autodiscover link tag" do
+      visit forum_topic_path(forum, topic)
+      assert page.has_selector?("link[title='ATOM']")
     end
   end
 end

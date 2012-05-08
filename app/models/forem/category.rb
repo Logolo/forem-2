@@ -6,6 +6,7 @@ module Forem
     field :name
     has_many :forums, :class_name => 'Forem::Forum'
     validates :name, :presence => true
+    attr_accessible :name
 
     def to_s
       name

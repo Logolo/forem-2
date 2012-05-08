@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe Forem::SubscriptionMailer do
   describe "topic_reply" do
-    let(:user) { Factory(:user) }
-    let(:topic) { Factory(:topic) }
-    let(:post) { Factory(:post, :topic => topic) }
-    let(:mail) { Forem::SubscriptionMailer.topic_reply(post.id, user.id) }
+    let(:user) { FactoryGirl.create(:user) }
+    let(:topic) { FactoryGirl.create(:topic) }
+    let(:post) { FactoryGirl.create(:post, :topic => topic) }
+    let(:mail) { Forem::SubscriptionMailer.topic_reply(post, user) }
 
   it "sends an email announcing a forum post update" do
     mail.to.should eq([user.email])

@@ -2,7 +2,11 @@ require 'spec_helper'
 
 describe Forem::Forum do
   before(:each) do
+<<<<<<< HEAD
     category = Fabricate(:category)
+=======
+    category = FactoryGirl.create(:category)
+>>>>>>> 515839e73bccbcb2f228e23082538bc86e7114fc
     @attr = {
       :title => "A forum",
       :description => "My sweet forum of goodness",
@@ -51,5 +55,17 @@ describe Forem::Forum do
       end
     end
 
+    context "moderator?" do
+      it "no user is no moderator" do
+        @forum.moderator?(nil).should be_false
+      end
+
+      it "is a moderator if group ids intersect" do
+        @forum.stub :moderator_ids => [1,2]
+        user = stub :forem_group_ids => [2,3]
+        @forum.moderator?(user).should be_true
+      end
+
+    end
   end
 end

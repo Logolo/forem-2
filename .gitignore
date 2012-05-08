@@ -8,8 +8,7 @@ pkg/
 *.gems
 tmp
 *.sw*
-spec/dummy/log
-spec/dummy/db/*.sqlite3
+spec/dummy
 *.rbc
 <<<<<<< HEAD
 models/rotodraft/
