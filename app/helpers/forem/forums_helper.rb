@@ -10,9 +10,9 @@ module Forem
 
     def posts_count(forum)
       if forem_admin_or_moderator?(forum)
-        forum.posts.count
+        forum.topics.inject(0) {|sum, topic| topic.posts.count + sum }
       else
-        forum.posts.approved.count
+        forum.topics.where(:state => :approved).inject(0) {|sum, topic| topic.posts.count + sum }
       end
     end
   end

@@ -3,6 +3,7 @@ module Forem
     include Mongoid::Document
     include Mongoid::Timestamps
     include Workflow
+    include Forem::Concerns::Viewable
 
     workflow_column :state
     workflow do
@@ -21,7 +22,7 @@ module Forem
     belongs_to :forum, :class_name => 'Forem::Forum'
     belongs_to :user, :class_name => Forem.user_class.to_s
     has_many   :subscriptions
-    has_many :posts, :class_name => 'Forem::Post', :dependant => destroy
+    has_many :posts, :class_name => 'Forem::Post', :dependent => :delete
 
     attr_protected :pinned, :locked
 
@@ -40,8 +41,7 @@ module Forem
       end
 
       def by_pinned
-        order('forem_topics.pinned DESC').
-        order('forem_topics.id')
+        order_by([:pinned, :desc])
       end
 
       def by_most_recent_post
@@ -50,9 +50,7 @@ module Forem
       end
 
       def by_pinned_or_most_recent_post
-        order('forem_topics.pinned DESC').
-        order('forem_topics.last_post_at DESC').
-        order('forem_topics.id')
+        order_by([:pinned, :desc], [:last_post_at, :desc])
       end
 
       def pending_review

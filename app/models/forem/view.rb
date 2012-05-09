@@ -2,6 +2,10 @@ module Forem
   class View
     include Mongoid::Document
     include Mongoid::Timestamps
+
+    field :current_viewed_at, :type => DateTime
+    field :past_viewed_at, :type => DateTime
+
     before_create :set_viewed_at_to_now
 
     belongs_to :viewable, :polymorphic => true

@@ -3,6 +3,7 @@ module Forem
     include Mongoid::Document
     include Mongoid::Timestamps
     include Workflow
+    include Forem::Concerns::Viewable
 
     workflow_column :state
     workflow do
@@ -19,7 +20,7 @@ module Forem
 
     attr_accessible :text, :reply_to_id
 
-    belongs_to :topic
+    belongs_to :topic, :class_name => 'Forem::Topic'
     belongs_to :user,     :class_name => Forem.user_class.to_s
     belongs_to :reply_to, :class_name => "Post"
 

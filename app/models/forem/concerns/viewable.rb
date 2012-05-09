@@ -6,20 +6,22 @@ module Forem
       extend ActiveSupport::Concern
 
       included do
-        has_many :views, :as => :viewable
+        has_many :views, :as => :viewable, :class_name => "Forem::View"
       end
 
       def view_for(user)
-        views.find_by_user_id(user.id)
+        views.where(:user_id => user.id)
       end
 
       # Track when users last viewed topics
       def register_view_by(user)
         return unless user
 
-        view = views.find_or_create_by_user_id(user.id)
-        view.increment!("count")
-        increment!(:views_count)
+        view = views.find_or_create_by(:user_id => user.id)
+        view.inc(:count, 1)
+        #view.increment(:views_count, 1)
+        #view.increment!("count")
+        #increment!(:views_count)
 
         # update current viewed at if more than 15 minutes ago
         if view.current_viewed_at < 15.minutes.ago
