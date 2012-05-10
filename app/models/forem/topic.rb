@@ -5,6 +5,8 @@ module Forem
     include Workflow
     include Forem::Concerns::Viewable
 
+    field :state
+
     workflow_column :state
     workflow do
       state :pending_review do
@@ -21,9 +23,10 @@ module Forem
     field :hidden, type: Boolean, default: false
     belongs_to :forum, :class_name => 'Forem::Forum'
     belongs_to :user, :class_name => Forem.user_class.to_s
-    has_many   :subscriptions
-    has_many :posts, :class_name => 'Forem::Post', :dependent => :delete
+    has_many :subscriptions, :class_name => "Forem::Subscription"
+    has_many :posts, :class_name => "Forem::Post"
 
+    attr_accessor :moderation_option
     attr_protected :pinned, :locked
 
     accepts_nested_attributes_for :posts
@@ -63,9 +66,7 @@ module Forem
 
       def approved_or_pending_review_for(user)
         if user
-          where("forem_topics.state = ? OR " +
-                "(forem_topics.state = ? AND forem_topics.user_id = ?)",
-                 'approved', 'pending_review', user.id)
+          Topic.all_of("$or" => [{:state => :approved}, {"$and" => [{:state => :pending_review}, {:user_id => user.id}]}])
         else
           approved
         end
@@ -123,7 +124,7 @@ module Forem
     end
 
     def subscriber?(user_id)
-      subscriptions.exists?(:subscriber_id => user_id)
+      subscriptions.where(:subscriber_id => user_id)
     end
 
     def subscription_for user_id
@@ -143,7 +144,7 @@ module Forem
     def approve_user_and_posts
       return unless state_changed?
 
-      first_post = self.posts.by_created_at.first
+      first_post = self.posts.first
       first_post.approve! unless first_post.approved?
       self.user.update_attribute(:forem_state, 'approved') if self.user.forem_state != 'approved'
     end

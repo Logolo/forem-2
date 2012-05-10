@@ -5,8 +5,8 @@ module Forem
     helper 'forem/posts'
 
     def index
-      @posts = forum.posts.pending_review.topic_not_pending_review
-      @topics = forum.topics.pending_review
+      @posts = forum.posts.where(:state => :pending_review)
+      @topics = forum.topics.where(:state => :pending_review)
     end
 
     def posts

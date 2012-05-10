@@ -9,7 +9,7 @@ module Forem
     has_many :topics, :class_name => 'Forem::Topic'
     #has_many :posts, :through => :topics, :dependent => :destroy
     #has_many :moderators, :through => :moderator_groups, :source => :group
-    has_many :moderator_groups
+    has_many :moderator_groups, :class_name => "Forem::ModeratorGroup"
 
     validates :category_id, :presence => true
     validates :title, :presence => true
@@ -36,6 +36,23 @@ module Forem
     def moderator?(user)
       user.forem_admin?
       # user && (user.forem_group_ids & self.moderator_ids).any?
+    end
+
+    def posts
+      array = Post.all
+      self.topics.each do |t|
+        array.clear
+        array.push(t.posts)
+      end
+      return array
+    end
+
+    def moderators
+      array = Array.new
+      self.moderator_groups.each do |g|
+        array << g.group.members
+      end
+      return array
     end
   end
 end

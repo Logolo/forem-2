@@ -5,6 +5,10 @@ module Forem
     include Workflow
     include Forem::Concerns::Viewable
 
+    field :state
+    field :text
+    field :notified, :type => Boolean
+
     workflow_column :state
     workflow do
       state :pending_review do
@@ -22,9 +26,9 @@ module Forem
 
     belongs_to :topic, :class_name => 'Forem::Topic'
     belongs_to :user,     :class_name => Forem.user_class.to_s
-    belongs_to :reply_to, :class_name => "Post"
+    belongs_to :reply_to, :class_name => "Forem::Post"
 
-    has_many :replies, :class_name  => "Post",
+    has_many :replies, :class_name  => "Forem::Post",
                        :foreign_key => "reply_to_id",
                        :dependent   => :nullify
 
@@ -42,23 +46,19 @@ module Forem
 
     class << self
       def approved
-        includes(:topic).
-        select("#{quoted_table_name}.*").
-        select(Topic.arel_table[:state].eq('approved'))
+        Post.where(:state => :approved)
       end
 
       def approved_or_pending_review_for(user)
         if user
-          where arel_table[:state].eq('approved').or(
-                  arel_table[:state].eq('pending_review').and(arel_table[:user_id].eq(user.id))
-                )
+          Post.all_of("$or" => [{:state => :approved}, {"$and" => [{:state => :pending_review}, {:user_id => user.id}]}])
         else
           approved
         end
       end
 
       def by_created_at
-        order :created_at
+        order_by :created_at
       end
 
       def pending_review
@@ -80,7 +80,7 @@ module Forem
       def moderate!(posts)
         posts.each do |post_id, moderation|
           # We use find_by_id here just in case a post has been deleted.
-          post = Post.find_by_id(post_id)
+          post = Post.where(:post_id => post_id).first
           post.send("#{moderation[:moderation_option]}!") if post
         end
       end
@@ -103,7 +103,7 @@ module Forem
     end
 
     def email_topic_subscribers
-      topic.subscriptions.includes(:subscriber).find_each do |subscription|
+      topic.subscriptions.includes(:subscriber).each do |subscription|
         if subscription.subscriber != user
           subscription.send_notification(self.id)
         end
