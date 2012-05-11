@@ -1,10 +1,9 @@
 module Forem
   module Autocomplete
     def forem_autocomplete(term)
-      where("#{Forem.autocomplete_field} LIKE ?", "%#{term}%").
+      where("#{Forem.autocomplete_field}" => /#{term}/).
       limit(10).
-      select("#{Forem.autocomplete_field}").
-      order("#{Forem.autocomplete_field}")
+      to_a
     end
 
   end
