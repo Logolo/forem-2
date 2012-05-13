@@ -23,7 +23,7 @@ module Forem
 
     def last_post_for(forem_user)
       return last_visible_post if self.topics.order_by([['posts.created_at', :desc]]).first == nil
-      last_post = self.topics.order_by([['posts.created_at', :desc]]).first.posts.first
+      last_post = self.topics.by_most_recent_post.first.posts.by_created_at.last
       forem_user && forem_user.forem_admin? ? last_post : last_visible_post
     end
 

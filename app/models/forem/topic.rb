@@ -48,8 +48,7 @@ module Forem
       end
 
       def by_most_recent_post
-        order('forem_topics.last_post_at DESC').
-        order('forem_topics.id')
+        order_by([:last_post_at, :desc])
       end
 
       def by_pinned_or_most_recent_post
