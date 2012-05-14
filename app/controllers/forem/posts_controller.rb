@@ -19,7 +19,7 @@ module Forem
         flash.alert = t("forem.post.not_created_topic_locked")
         redirect_to [@topic.forum, @topic] and return
       end
-      @post = @topic.posts.build(params[:post])
+      @post = @topic.posts.create(params[:post])
       @post.user = forem_user
       if @post.save
         flash[:notice] = t("forem.post.created")
