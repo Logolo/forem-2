@@ -28,7 +28,7 @@ module Forem
     validates :title, :presence => true
     validates :description, :presence => true
 
-    attr_accessible :category_id, :title, :description, :moderator_ids
+    attr_accessible :category_id, :title, :description, :moderator_ids, :order
 
     def count_of_posts
       topics.inject(0) {|sum, topic| topic.posts.count + sum }
