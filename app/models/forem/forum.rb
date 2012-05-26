@@ -19,6 +19,9 @@ module Forem
     # true = everyone can reply, false = only admins can reply
     field :replyable, :type => Boolean, :default => true
 
+    # true = everyone can create, false = only admins can create
+    field :createable, :type => Boolean, :default => true
+
     validates :category_id, :presence => true
     validates :title, :presence => true
     validates :description, :presence => true
