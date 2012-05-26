@@ -22,6 +22,8 @@ module Forem
     # true = everyone can create, false = only admins can create
     field :createable, :type => Boolean, :default => true
 
+    field :order, :type => Integer, :default => 0
+
     validates :category_id, :presence => true
     validates :title, :presence => true
     validates :description, :presence => true
