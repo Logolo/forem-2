@@ -11,6 +11,14 @@ module Forem
     #has_many :moderators, :through => :moderator_groups, :source => :group
     has_many :moderator_groups, :class_name => "Forem::ModeratorGroup"
 
+    # Permissions
+
+    # true = everyone view, false = admins view
+    field :viewable, :type => Boolean, :default => true
+
+    # true = everyone can reply, false = only admins can reply
+    field :replyable, :type => Boolean, :default => true
+
     validates :category_id, :presence => true
     validates :title, :presence => true
     validates :description, :presence => true
