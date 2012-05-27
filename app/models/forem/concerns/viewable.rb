@@ -19,18 +19,13 @@ module Forem
         return unless user
 
         view = views.find_or_create_by(:user_id => user.id)
+        view.user_id = user.id
         view.inc(:count, 1)
         inc(:views_count, 1)
-        #view.increment(:views_count, 1)
-        #view.increment!("count")
-        #increment!(:views_count)
 
-        # update current viewed at if more than 15 minutes ago
-        if view.current_viewed_at < 15.minutes.ago
-          view.past_viewed_at    = view.current_viewed_at
-          view.current_viewed_at = Time.now
-          view.save
-        end
+        view.past_viewed_at    = view.current_viewed_at
+        view.current_viewed_at = Time.now
+        view.save
       end
     end
   end

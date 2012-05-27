@@ -114,7 +114,7 @@ module Forem
 
     def subscribe_user(user_id)
       if user_id && !subscriber?(user_id)
-        subscriptions.create!(:subscriber_id => user_id)
+        subscriptions.create(:subscriber_id => user_id)
       end
     end
 
@@ -123,7 +123,7 @@ module Forem
     end
 
     def subscriber?(user_id)
-      subscriptions.where(:subscriber_id => user_id)
+      subscriptions.where(:subscriber_id => user_id).count > 0
     end
 
     def subscription_for user_id

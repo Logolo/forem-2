@@ -11,7 +11,7 @@ module Forem
     attr_accessible :subscriber_id
 
     def send_notification(post_id)
-      SubscriptionMailer.topic_reply(post_id, self.subscriber.id).deliver
+      #SubscriptionMailer.topic_reply(post_id, self.subscriber.id).deliver
     end
   end
 end
