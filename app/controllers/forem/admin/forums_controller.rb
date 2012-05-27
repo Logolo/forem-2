@@ -4,7 +4,7 @@ module Forem
       before_filter :find_forum, :only => [:edit, :update, :destroy]
 
       def index
-        @forums = Forum.all
+        @forums = Forum.all.order_by([:order, :asc])
       end
 
       def new
