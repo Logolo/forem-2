@@ -37,9 +37,9 @@ module Forem
     delegate :forum, :to => :topic
 
     after_create :set_topic_last_post_at
-    after_create :subscribe_replier #, :if => Proc.new { |p| p.user && p.user.forem_auto_subscribe? }
     after_create :skip_pending_review_if_user_approved
 
+    after_save :subscribe_replier, :if => Proc.new { |p| p.user && p.user.forem_auto_subscribe? }
     after_save :approve_user,   :if => :approved?
     after_save :blacklist_user, :if => :spam?
     after_save :email_topic_subscribers, :if => Proc.new { |p| p.approved? && !p.notified? }
