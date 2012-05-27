@@ -5,7 +5,7 @@ module Forem
     helper 'forem/topics'
 
     def index
-      @categories = Forem::Category.all
+      @categories = Forem::Category.all.order_by([:order, :asc])
     end
 
     def show
