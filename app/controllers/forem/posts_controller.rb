@@ -7,9 +7,8 @@ module Forem
     def new
       authorize! :reply, @topic
       @post = @topic.posts.build
-      if params[:quote]
+      if params[:reply_to_id]
         @reply_to = @topic.posts.find(params[:reply_to_id])
-        @post.text = view_context.forem_quote(@reply_to.text)
       end
     end
 
@@ -23,7 +22,7 @@ module Forem
       @post.user = forem_user
       if @post.save
         flash[:notice] = t("forem.post.created")
-        redirect_to forum_topic_url(@topic.forum, @topic, :page => last_page)
+        redirect_to forum_topic_url(@topic.forum, @topic, :page => last_page) + "#" + @post.id.to_s
       else
         params[:reply_to_id] = params[:post][:reply_to_id]
         flash.now.alert = t("forem.post.not_created")

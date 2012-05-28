@@ -28,7 +28,7 @@ module Forem
       @topic.user = forem_user
       if @topic.save && @topic.posts.first.save
         flash[:notice] = t("forem.topic.created")
-        redirect_to root_path #[@forum, @topic]
+        redirect_to [@forum, @topic]
       else
         flash.now.alert = t("forem.topic.not_created")
         render :action => "new"

@@ -58,7 +58,7 @@ module Forem
       end
 
       def by_created_at
-        order_by :created_at
+        order_by([:created_at, :asc])
       end
 
       def pending_review
