@@ -11,7 +11,7 @@ module Forem
 
     has_many :members, :class_name => Forem.user_class.to_s
 
-    attr_accessible :name
+    attr_accessible :name, :html_color, :mc_color, :mc_permissions
 
     def to_s
       name
