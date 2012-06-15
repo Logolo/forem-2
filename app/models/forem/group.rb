@@ -5,6 +5,7 @@ module Forem
     field :name
     field :html_color
     field :mc_color
+    field :mc_permissions
 
     validates :name, :presence => true
 
