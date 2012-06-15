@@ -3,6 +3,8 @@ module Forem
     include Mongoid::Document
 
     field :name
+    field :html_color
+    field :mc_color
 
     validates :name, :presence => true
 
