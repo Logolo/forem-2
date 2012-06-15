@@ -21,12 +21,13 @@ module Forem
       end
 
       def update
+        @group = Group.find(params[:id])
         if @group.update_attributes(params[:group])
           flash[:notice] = "Group Updated"
         else
           flash[:error] = "Group Not Updated"
         end
-        redirect_to admin_groups_path
+        redirect_to admin_group_path(@group)
       end
 
       def show
