@@ -3,7 +3,7 @@ module Forem
     include Mongoid::Document
 
     field :name
-    field :html_color
+    field :html_color, :default => "none"
     field :mc_color
     field :mc_permissions
 
