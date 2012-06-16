@@ -4,6 +4,7 @@ module Forem
 
     field :name
     field :html_color, :default => "none"
+    field :badge_color, :default => "none"
     field :mc_color
     field :mc_permissions
 
