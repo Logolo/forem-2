@@ -13,7 +13,7 @@ module Forem
 
     has_and_belongs_to_many :members, :class_name => Forem.user_class.to_s, :inverse_of => :groups
 
-    attr_accessible :name, :html_color, :badge_color, :mc_color, :mc_permissions
+    attr_accessible :name, :html_color, :badge_color, :mc_color, :mc_permissions, :priority
 
     class << self
         def by_priority
