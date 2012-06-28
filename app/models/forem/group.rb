@@ -17,12 +17,16 @@ module Forem
 
     class << self
         def by_priority
-            order_by(:priority)
+            order_by(:priority, :asc)
         end
     end
 
     def to_s
       name
+    end
+
+    def server_side?
+        self.name[0] == "_"
     end
   end
 end

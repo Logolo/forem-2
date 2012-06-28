@@ -2,7 +2,7 @@ module Forem
   module Admin
     class GroupsController < BaseController
       def index
-        @groups = Group.all
+        @groups = Group.all.by_priority
       end
 
       def new
@@ -11,6 +11,10 @@ module Forem
 
       def create
         @group = Group.new(params[:group])
+        if params[:group]["name"][0] == "_"
+          flash[:alert] = "You can not create groups that start with an underscore. These are reserved for server side purpouses."
+          return render :new
+        end
         if @group.save
           flash[:notice] = t("forem.admin.group.created")
           redirect_to [:admin, @group]
