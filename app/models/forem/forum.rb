@@ -11,7 +11,8 @@ module Forem
     #has_many :moderators, :through => :moderator_groups, :source => :group
     has_many :moderator_groups, :class_name => "Forem::ModeratorGroup"
 
-    # Permissions
+    # Caching
+    field :posts_count, :type => Integer
 
     # true = everyone view, false = admins view
     field :viewable, :type => Boolean, :default => true
@@ -66,6 +67,15 @@ module Forem
         array << g.group.members
       end
       return array
+    end
+
+    def increment_posts_count
+      if self.posts_count == nil
+        self.posts_count = 1
+      else
+        self.posts_count += 1
+      end
+      self.save
     end
   end
 end
