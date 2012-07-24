@@ -8,8 +8,8 @@ module Forem
 
     before_create :set_viewed_at_to_now
 
-    belongs_to :viewable, :polymorphic => true
-    belongs_to :user, :class_name => Forem.user_class.to_s
+    belongs_to :viewable, :polymorphic => true, :index => true
+    belongs_to :user, :class_name => Forem.user_class.to_s, :index => true
 
     validates :viewable_id,   :presence => true
     validates :viewable_type, :presence => true
