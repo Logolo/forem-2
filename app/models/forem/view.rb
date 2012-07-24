@@ -16,9 +16,6 @@ module Forem
 
     attr_accessible :user, :current_viewed_at, :count
 
-    index({user_id: 1})
-    index({viewable_type: 1})
-
     def viewed_at
       updated_at
     end
