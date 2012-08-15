@@ -16,25 +16,6 @@ module Forem
       end
     end
 
-    def new
-      authorize! :create_topic, @forum
-      @topic = @forum.topics.build
-      @topic.posts.build
-    end
-
-    def create
-      authorize! :create_topic, @forum
-      @topic = @forum.topics.build(params[:topic])
-      @topic.user = forem_user
-      if @topic.save && @topic.posts.first.save
-        flash[:notice] = t("forem.topic.created")
-        redirect_to [@forum, @topic]
-      else
-        flash.now.alert = t("forem.topic.not_created")
-        render :action => "new"
-      end
-    end
-
     def destroy
       @topic = @forum.topics.find(params[:id])
       if forem_user == @topic.user || forem_user.forem_admin?
@@ -51,7 +32,7 @@ module Forem
       if find_topic
         @topic.subscribe_user(forem_user.id)
         flash[:notice] = t("forem.topic.subscribed")
-        redirect_to forum_topic_url(@topic.forum, @topic)
+        redirect_to topic_url(@topic)
       end
     end
 
@@ -59,13 +40,13 @@ module Forem
       if find_topic
         @topic.unsubscribe_user(forem_user.id)
         flash[:notice] = t("forem.topic.unsubscribed")
-        redirect_to forum_topic_url(@topic.forum, @topic)
+        redirect_to topic_url(@topic)
       end
     end
 
     private
     def find_forum
-      @forum = Forem::Forum.find(params[:forum_id])
+      @forum = Forem::Topic.find(params[:id]).forum
       authorize! :read, @forum
     end
 

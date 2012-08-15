@@ -16,14 +16,14 @@ module Forem
       authorize! :reply, @topic
       if @topic.locked?
         flash.alert = t("forem.post.not_created_topic_locked")
-        redirect_to [@topic.forum, @topic] and return
+        redirect_to [@topic] and return
       end
       @post = @topic.posts.create(params[:post])
       @post.user = forem_user
       if @post.save
         @topic.forum.increment_posts_count
         flash[:notice] = t("forem.post.created")
-        redirect_to forum_topic_url(@topic.forum, @topic, :page => last_page) + "#" + @post.id.to_s
+        redirect_to topic_url(@topic, :page => last_page) + "#" + @post.id.to_s
       else
         params[:reply_to_id] = params[:post][:reply_to_id]
         flash.now.alert = t("forem.post.not_created")
@@ -40,7 +40,7 @@ module Forem
       authorize! :edit_post, @topic.forum
       @post = Post.find(params[:id])
       if @post.owner_or_admin?(forem_user) and @post.update_attributes(params[:post])
-        redirect_to [@topic.forum, @topic], :notice => t('edited', :scope => 'forem.post')
+        redirect_to [@topic], :notice => t('edited', :scope => 'forem.post')
       else
         flash.now.alert = t("forem.post.not_edited")
         render :action => "edit"
@@ -57,11 +57,11 @@ module Forem
           redirect_to [@topic.forum]
         else
           flash[:notice] = t("forem.post.deleted")
-          redirect_to [@topic.forum, @topic]
+          redirect_to [@topic]
         end
       else
         flash[:alert] = t("forem.post.cannot_delete")
-        redirect_to [@topic.forum, @topic]
+        redirect_to [@topic]
       end
 
     end

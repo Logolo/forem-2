@@ -14,7 +14,7 @@ module Forem
         @topic.forum_id = params[:topic][:forum_id]
         if @topic.save
           flash[:notice] = t("forem.topic.updated")
-          redirect_to forum_topic_path(@topic.forum, @topic)
+          redirect_to topic_path(@topic)
         else
           flash.alert = t("forem.topic.not_updated")
           render :action => "edit"
@@ -25,25 +25,25 @@ module Forem
         forum = @topic.forum
         @topic.destroy
         flash[:notice] = t("forem.topic.deleted")
-        redirect_to forum_topics_path(forum)
+        redirect_to topics_path(forum)
       end
 
       def toggle_hide
         @topic.toggle!(:hidden)
         flash[:notice] = t("forem.topic.hidden.#{@topic.hidden?}")
-        redirect_to forum_topic_path(@topic.forum, @topic)
+        redirect_to topic_path(@topic)
       end
 
       def toggle_lock
         @topic.toggle!(:locked)
         flash[:notice] = t("forem.topic.locked.#{@topic.locked?}")
-        redirect_to forum_topic_path(@topic.forum, @topic)
+        redirect_to topic_path(@topic)
       end
 
       def toggle_pin
         @topic.toggle!(:pinned)
         flash[:notice] = t("forem.topic.pinned.#{@topic.pinned?}")
-        redirect_to forum_topic_path(@topic.forum, @topic)
+        redirect_to topic_path(@topic)
       end
 
       private

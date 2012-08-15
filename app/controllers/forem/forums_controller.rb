@@ -26,6 +26,27 @@ module Forem
       end
     end
 
+    def new
+      @forum = Forem::Forum.find(params[:forum_id])
+      authorize! :create_topic, @forum
+      @topic = @forum.topics.build
+      @topic.posts.build
+    end
+
+    def create
+      @forum = Forem::Forum.find(params[:forum_id])
+      authorize! :create_topic, @forum
+      @topic = @forum.topics.build(params[:topic])
+      @topic.user = forem_user
+      if @topic.save && @topic.posts.first.save
+        flash[:notice] = t("forem.topic.created")
+        redirect_to @topic
+      else
+        flash.now.alert = t("forem.topic.not_created")
+        render :action => "new"
+      end
+    end
+
     private
     def register_view
       @forum.register_view_by(forem_user)
