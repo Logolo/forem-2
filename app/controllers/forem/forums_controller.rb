@@ -1,7 +1,8 @@
 module Forem
   class ForumsController < Forem::ApplicationController
-#TODO reenable this
-#    load_and_authorize_resource :only => :show
+
+    before_filter :authenticate_forem_user, :only => [:create, :new]
+    before_filter :block_spammers, :only => [:new, :create]
     helper 'forem/topics'
 
     def index
@@ -52,5 +53,11 @@ module Forem
       @forum.register_view_by(forem_user)
     end
 
+    def block_spammers
+      if forem_user.forem_state == "spam"
+        flash[:alert] = t('forem.general.flagged_for_spam') + ' ' + t('forem.general.cannot_create_topic')
+        redirect_to :back
+      end
+    end
   end
 end
