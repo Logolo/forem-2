@@ -38,6 +38,10 @@ module Forem
 
     def update
       authorize! :edit_post, @topic.forum
+      if @topic.locked?
+        flash.alert = t("forem.post.not_created_topic_locked")
+        redirect_to [@topic] and return
+      end
       @post = Post.find(params[:id])
       if @post.owner_or_admin?(forem_user) and @post.update_attributes(params[:post])
         redirect_to [@topic], :notice => t('edited', :scope => 'forem.post')
@@ -49,6 +53,10 @@ module Forem
 
     def destroy
       @post = @topic.posts.find(params[:id])
+      if @topic.locked
+        flash.alert = t("forem.post.not_created_topic_locked")
+        redirect_to [@topic] and return
+      end
       if @post.owner_or_admin?(forem_user)
         @post.destroy
         if @post.topic.posts.count == 0
