@@ -4,8 +4,8 @@ module Forem
     def create
       user = Forem.user_class.where(Forem.autocomplete_field => params[:user]).first
       unless group.members.where(:username => user.username).count > 0
-        user.groups << group
-        user.save
+          group.members << user.username
+          group.save
       end
       render :json => nil, :status => :ok
     end

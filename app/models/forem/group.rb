@@ -15,7 +15,7 @@ module Forem
 
     validates :name, :presence => true
 
-    has_and_belongs_to_many :members, :class_name => Forem.user_class.to_s, :inverse_of => :groups
+    field :members, :type => Array, :default => []
 
     attr_accessible :name, :html_color, :badge_color, :mc_color, :mc_permissions, :priority, :can_view, :can_create, :can_reply, :can_edit_punishments
 
