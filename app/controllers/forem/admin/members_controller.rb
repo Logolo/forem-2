@@ -3,7 +3,7 @@ module Forem
 
     def create
       user = Forem.user_class.where(Forem.autocomplete_field => params[:user]).first
-      unless group.members.include?(user.username) > 0
+      unless group.members.include?(user.username)
           group.members << user.username
           group.save
       end
