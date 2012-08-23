@@ -20,6 +20,7 @@ Forem::Engine.routes.draw do
   # REDIRECT OLD ROUTES
   get '/forums/:forum_id/', :to => "redirect#forum"
   get '/forums/:forum_id/topics/:topic_id', :to => "redirect#topic"
+  get '/posts/:post_id', :to => "redirect#posts"
 
   # MODERATION
   get '/:forum_id/moderation', :to => "moderation#index", :as => :forum_moderator_tools

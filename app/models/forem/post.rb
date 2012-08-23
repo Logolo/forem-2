@@ -42,7 +42,6 @@ module Forem
     after_save :subscribe_replier, :if => Proc.new { |p| p.user && p.user.forem_auto_subscribe? }
     after_save :approve_user,   :if => :approved?
     after_save :blacklist_user, :if => :spam?
-    after_save :email_topic_subscribers, :if => Proc.new { |p| p.approved? && !p.notified? }
 
     class << self
       def approved
@@ -100,15 +99,6 @@ module Forem
       if self.topic && self.user
         self.topic.subscribe_user(self.user.id)
       end
-    end
-
-    def email_topic_subscribers
-      topic.subscriptions.includes(:subscriber).each do |subscription|
-        if subscription.subscriber != user
-          subscription.send_notification(self.id)
-        end
-      end
-      self.update_attribute(:notified, true)
     end
 
     def subscribe_replier

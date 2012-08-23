@@ -4,6 +4,7 @@ module Forem
     include Mongoid::Timestamps
     include Workflow
     include Forem::Concerns::Viewable
+    include Forem::Concerns::Subscribable
 
     field :state
 
@@ -23,7 +24,6 @@ module Forem
     field :hidden, type: Boolean, default: false
     belongs_to :forum, :class_name => 'Forem::Forum'
     belongs_to :user, :class_name => Forem.user_class.to_s
-    has_many :subscriptions, :class_name => "Forem::Subscription"
     has_many :posts, :class_name => "Forem::Post"
 
     attr_accessor :moderation_option
@@ -35,7 +35,7 @@ module Forem
 
     before_save  :set_first_post_user
     after_save   :approve_user_and_posts, :if => :approved?
-    after_create :subscribe_poster
+    after_create :subscribe_creator
     after_create :skip_pending_review_if_user_approved
 
     class << self
@@ -106,28 +106,6 @@ module Forem
     # A Topic cannot be replied to if it's locked.
     def can_be_replied_to?
       !locked?
-    end
-
-    def subscribe_poster
-      subscribe_user(self.user_id)
-    end
-
-    def subscribe_user(user_id)
-      if user_id && !subscriber?(user_id)
-        subscriptions.create(:subscriber_id => user_id)
-      end
-    end
-
-    def unsubscribe_user(user_id)
-      subscriptions.where(:subscriber_id => user_id).destroy_all
-    end
-
-    def subscriber?(user_id)
-      subscriptions.where(:subscriber_id => user_id).count > 0
-    end
-
-    def subscription_for user_id
-      subscriptions.first(:conditions => { :subscriber_id=>user_id })
     end
 
     protected

@@ -21,6 +21,7 @@ module Forem
       @post = @topic.posts.create(params[:post])
       @post.user = forem_user
       if @post.save
+        @topic.alert_subscribers(current_user.id)
         @topic.forum.increment_posts_count
         flash[:notice] = t("forem.post.created")
         redirect_to topic_url(@topic, :page => last_page) + "#" + @post.id.to_s
