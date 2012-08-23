@@ -3,6 +3,8 @@ module Forem
     include Mongoid::Document
     include Mongoid::Timestamps
 
+    field :unsubscribed, :type => Boolean, :default => false
+
     belongs_to :subscribable, :polymorphic => true, :index => true
     belongs_to :subscriber, :class_name => Forem.user_class.to_s, :index => true
 

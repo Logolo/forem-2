@@ -15,16 +15,23 @@ module Forem
 
             def subscribe_user(user_id)
                 if user_id && !subscriber?(user_id)
-                    subscriptions.create(:subscriber_id => user_id)
+                    if sub = subscriptions.where(:subscriber_id => user_id, :unsubscribed => true).first
+                        sub.unsubscribed = false
+                        sub.save
+                    else
+                        subscriptions.create(:subscriber_id => user_id)
+                    end
                 end
             end
 
             def unsubscribe_user(user_id)
-                subscriptions.where(:subscriber_id => user_id).destroy_all
+                sub = subscriptions.where(:subscriber_id => user_id).first
+                sub.unsubscribed = true
+                sub.save
             end
 
             def subscriber?(user_id)
-                subscriptions.where(:subscriber_id => user_id).count > 0
+                subscriptions.where(:subscriber_id => user_id, :unsubscribed => false).count > 0
             end
 
             def subscription_for user_id
