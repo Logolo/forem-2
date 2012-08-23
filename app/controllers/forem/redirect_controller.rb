@@ -14,7 +14,7 @@ class Forem::RedirectController < ApplicationController
             x = i
             break if p.id == post.id
         end
-        return redirect_to topic_url(post.topic, :page => (x / 20) + 1) + "#" + post.id.to_s
+        return redirect_to topic_url(post.topic, :page => (x / Forem.per_page) + 1) + "#" + post.id.to_s
 
     end
 end
