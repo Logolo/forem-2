@@ -39,7 +39,7 @@ module Forem
             end
 
             def alert_subscribers(*args)
-                subscriptions.each do |sub|
+                subscriptions.where(:unsubscribed => false).each do |sub|
                     sub.alert_subscriber(args)
                 end
             end
