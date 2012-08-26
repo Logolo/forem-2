@@ -1,6 +1,9 @@
 Forem::Engine.routes.draw do
   root :to => "forums#index"
 
+  # SUBSCRIPTIONS
+  get '/subscriptions', :to => "topics#subscriptions"
+
   # NEW ROUTES
   resources :forums, :path => "/" do
     get 'new'
@@ -27,6 +30,8 @@ Forem::Engine.routes.draw do
   put '/:forum_id/moderate/posts', :to => "moderation#posts", :as => :forum_moderate_posts
   put '/:forum_id/topics/:topic_id/moderate', :to => "moderation#topic", :as => :moderate_forum_topic
 
+
+  # ADMINISTRATION
   namespace :admin, :path => "/admin/forums/" do
     root :to => "base#index"
     resources :groups do

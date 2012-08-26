@@ -2,7 +2,7 @@ module Forem
   class TopicsController < Forem::ApplicationController
     helper 'forem/posts'
     before_filter :authenticate_forem_user, :except => [:show]
-    before_filter :find_forum
+    before_filter :find_forum, :except => [:subscriptions]
     before_filter :block_spammers, :only => [:new, :create]
 
     def show
@@ -42,6 +42,15 @@ module Forem
         flash[:notice] = t("forem.topic.unsubscribed")
         redirect_to topic_url(@topic)
       end
+    end
+
+    def subscriptions
+        @subscriptions = Forem::Subscription.where(:subscriber_id => forem_user.id, :subscribable_type => "Forem::Topic").asc(:updated_at)
+        @topics = Array.new
+        @subscriptions.each do |sub|
+            @topics << sub.subscribable
+        end
+        @topics = Kaminari.paginate_array(@topics).page(params[:page]).per(20)
     end
 
     private
