@@ -51,6 +51,7 @@ module Forem
             @topics << sub.subscribable
         end
         @topics = Kaminari.paginate_array(@topics).page(params[:page]).per(20)
+        @topics.sort_by!{:updated_at}
     end
 
     private
