@@ -23,7 +23,12 @@ module Forem
       str = ""
       case self.subscription.subscribable_type
       when "Forem::Topic"
-        str += "/forums/posts/" + self.forem_topic_post.id.to_s
+        str += "/forums/"
+        if self.forem_topic_post == nil
+          str += "topics/" + self.subscription.subscribable.id.to_s
+        else
+          str += "posts/" + self.forem_topic_post_id.to_s
+        end
       else
         str
       end
