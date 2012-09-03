@@ -27,6 +27,8 @@ module Forem
           alert.forem_topic_count += 1
           alert.save
         end
+      when "Friendship"
+        Forem::Alert.create(:subscription_id => self.id, :user_id => self.subscriber_id, :created_at => Time.now, :updated_at => Time.now)
       else
         raise TypeError, 'This object is not subscribable!'
       end

@@ -45,7 +45,7 @@ module Forem
     end
 
     def subscriptions
-        @subscriptions = Forem::Subscription.where(:subscriber_id => forem_user.id, :subscribable_type => "Forem::Topic").asc(:updated_at)
+        @subscriptions = Forem::Subscription.where(:subscriber_id => forem_user.id, :subscribable_type => "Forem::Topic", :unsubscribed => false).asc(:updated_at)
         @topics = Array.new
         @subscriptions.each do |sub|
             @topics << sub.subscribable

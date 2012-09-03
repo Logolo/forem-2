@@ -29,6 +29,8 @@ module Forem
         else
           str += "posts/" + self.forem_topic_post_id.to_s
         end
+      when "Friendship"
+        str += "/friendships?pending"
       else
         str
       end
@@ -44,6 +46,8 @@ module Forem
           str += " and " + self.forem_topic_count.to_s + " other" + (self.forem_topic_count > 1 ? "s" : "")
         end
         str += " replied to " + self.subscription.subscribable.subject
+      when "Friendship"
+        str += self.subscription.subscribable.friender + " has requested to be your friend"
       else
         str
       end
