@@ -45,13 +45,13 @@ module Forem
     end
 
     def subscriptions
-        @subscriptions = Forem::Subscription.where(:subscriber_id => forem_user.id, :subscribable_type => "Forem::Topic", :unsubscribed => false).desc(:updated_at)
+        @subscriptions = Forem::Subscription.where(:subscriber_id => forem_user.id, :subscribable_type => "Forem::Topic", :unsubscribed => false).asc(:updated_at)
         @topics = Array.new
         @subscriptions.each do |sub|
             @topics << sub.subscribable
         end
         @topics = Kaminari.paginate_array(@topics).page(params[:page]).per(20)
-        @topics.sort_by!{:updated_at}.reverse!
+        @topics.sort_by!{:updated_at}
     end
 
     private
