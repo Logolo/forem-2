@@ -11,10 +11,9 @@ module Forem
     end
 
     def destroy
-      user = Forem.user_class.find(params[:id])
-      group.member_ids.delete(user.id)
+      group.members.delete(params[:id])
       group.save
-      flash[:alert] = user.username + " was removed from the group"
+      flash[:alert] = params[:id] + " was removed from the group"
       redirect_to [:admin, group]
     end
 
