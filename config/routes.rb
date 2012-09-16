@@ -1,8 +1,10 @@
 Forem::Engine.routes.draw do
   root :to => "forums#index"
 
-  # SUBSCRIPTIONS
-  get '/subscriptions', :to => "topics#subscriptions"
+  # ME ROUTES
+  get 'my_subscriptions', :to => "topics#my_subscriptions"
+  get 'my_topics', :to => "topics#my_topics"
+  get 'my_posts', :to => "topics#my_posts"
 
   # NEW ROUTES
   resources :forums, :path => "/" do
@@ -24,6 +26,7 @@ Forem::Engine.routes.draw do
   get '/forums/:forum_id/', :to => "redirect#forum"
   get '/forums/:forum_id/topics/:topic_id', :to => "redirect#topic"
   get '/posts/:post_id', :to => "redirect#posts"
+  get '/subscriptions', :to => "redirect#subscriptions"
 
   # MODERATION
   get '/:forum_id/moderation', :to => "moderation#index", :as => :forum_moderator_tools

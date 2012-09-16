@@ -15,6 +15,9 @@ class Forem::RedirectController < ApplicationController
             break if p.id == post.id
         end
         return redirect_to topic_url(post.topic, :page => (x / Forem.per_page) + 1) + "#" + post.id.to_s
+    end
 
+    def subscriptions
+        return redirect_to my_subscriptions_path
     end
 end

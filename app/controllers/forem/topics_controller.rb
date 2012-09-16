@@ -2,7 +2,7 @@ module Forem
   class TopicsController < Forem::ApplicationController
     helper 'forem/posts'
     before_filter :authenticate_forem_user, :except => [:show]
-    before_filter :find_forum, :except => [:subscriptions]
+    before_filter :find_forum, :except => [:my_subscriptions, :my_posts, :my_topics]
     before_filter :block_spammers, :only => [:new, :create]
 
     def show
@@ -44,14 +44,22 @@ module Forem
       end
     end
 
-    def subscriptions
-        @subscriptions = Forem::Subscription.where(:subscriber_id => forem_user.id, :subscribable_type => "Forem::Topic", :unsubscribed => false).asc(:updated_at)
+    def my_subscriptions
+        @subscriptions = Forem::Subscription.where(:subscriber_id => forem_user.id, :subscribable_type => "Forem::Topic", :unsubscribed => false).desc(:updated_at)
         @topics = Array.new
         @subscriptions.each do |sub|
             @topics << sub.subscribable
         end
         @topics = Kaminari.paginate_array(@topics).page(params[:page]).per(20)
         @topics.sort_by!{:updated_at}
+    end
+
+    def my_posts
+        @posts = Forem::Post.where(:user_id => forem_user.id).by_updated_at.page(params[:page]).per(20)
+    end
+
+    def my_topics
+        @topics = Forem::Topic.where(:user_id => forem_user.id).by_most_recent_post.page(params[:page]).per(20)
     end
 
     private

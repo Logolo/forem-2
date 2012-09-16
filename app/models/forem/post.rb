@@ -60,6 +60,10 @@ module Forem
         order_by([:created_at, :asc])
       end
 
+      def by_updated_at
+        order_by([:updated_at, :desc])
+      end
+
       def pending_review
         where :state => 'pending_review'
       end
