@@ -26,6 +26,8 @@ module Forem
 
       def update
         @group = Group.find(params[:id])
+        params[:group][:mc_permissions] = params[:group][:mc_permissions].gsub("\r", "").split("\n")
+        puts params[:group][:mc_permissions]
         if @group.update_attributes(params[:group])
           flash[:notice] = "Group Updated"
         else
@@ -36,6 +38,12 @@ module Forem
 
       def show
         @group = Group.find(params[:id])
+        @permissions = ""
+        @group.mc_permissions.each do |perm|
+            @permissions += perm + "\n"
+        end
+        puts @permissions
+        puts "hi"
       end
 
       def destroy
