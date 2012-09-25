@@ -39,11 +39,11 @@ module Forem
       def show
         @group = Group.find(params[:id])
         @permissions = ""
-        @group.mc_permissions.each do |perm|
-            @permissions += perm + "\n"
+        if @group.mc_permissions != nil
+            @group.mc_permissions.each do |perm|
+                @permissions += perm + "\n"
+            end
         end
-        puts @permissions
-        puts "hi"
       end
 
       def destroy
