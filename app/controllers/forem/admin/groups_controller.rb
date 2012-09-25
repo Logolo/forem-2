@@ -26,7 +26,7 @@ module Forem
 
       def update
         @group = Group.find(params[:id])
-        params[:group][:mc_permissions] = params[:group][:mc_permissions].gsub("\r", "").split("\n")
+        params[:group][:mc_permissions] = params[:group][:mc_permissions].gsub("\r", "").split("\n") if params[:group][:mc_permissions] != nil
         puts params[:group][:mc_permissions]
         if @group.update_attributes(params[:group])
           flash[:notice] = "Group Updated"
