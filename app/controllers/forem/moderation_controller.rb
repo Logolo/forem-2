@@ -10,7 +10,7 @@ module Forem
     end
 
     def posts
-      Post.moderate!(params[:posts] || [])
+      Post.moderate!(params[:posts] || [], params[:event].downcase)
       flash[:notice] = t('forem.posts.moderation.success')
       redirect_to :back
     end

@@ -15,8 +15,14 @@ module Forem
         event :spam,    :transitions_to => :spam
         event :approve, :transitions_to => :approved
       end
+      state :approved do
+        event :hide, :transitions_to => :hidden
+      end
+      state :hidden do
+        event :hide, :transitions_to => :hidden
+        event :approve, :transitions_to => :approved
+      end
       state :spam
-      state :approved
     end
 
     # Used in the moderation tools partial
@@ -80,11 +86,14 @@ module Forem
         joins(:topic).where Topic.arel_table[:state].eq('approved')
       end
 
-      def moderate!(posts)
+      def moderate!(posts, action)
         posts.each do |post_id, moderation|
           # We use find_by_id here just in case a post has been deleted.
-          post = Post.where(:post_id => post_id).first
-          post.send("#{moderation[:moderation_option]}!") if post
+          post = Post.where(:_id => post_id).first
+          puts post_id
+          if post && moderation["post"] == "1"
+              post.send("#{action}!")
+          end
         end
       end
     end
@@ -125,5 +134,8 @@ module Forem
       user.update_attribute(:forem_state, "spam") if user
     end
 
+    def delete!
+      delete
+    end
   end
 end
