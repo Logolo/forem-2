@@ -9,6 +9,7 @@ class Forem::RedirectController < ApplicationController
 
     def posts
         post = Forem::Post.find(params[:post_id])
+        return redirect_to root_path, :notice => "Post does not exist" if post.topic == nil
         x = 0
         post.topic.posts.by_created_at.each_with_index do |p, i|
             x = i
