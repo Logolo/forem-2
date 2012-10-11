@@ -17,7 +17,7 @@ class Forem::RedirectController < ApplicationController
             posts = posts.approved
         end
 
-        post.topic.posts.by_created_at.each_with_index do |p, i|
+        posts.by_created_at.each_with_index do |p, i|
             x = i
             break if p.id == post.id
         end
