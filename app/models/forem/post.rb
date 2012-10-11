@@ -51,7 +51,7 @@ module Forem
 
     class << self
       def approved
-        Post.where(:state => :approved)
+        where(:state => 'approved')
       end
 
       def approved_or_pending_review_for(user)
@@ -71,11 +71,11 @@ module Forem
       end
 
       def pending_review
-        where :state => 'pending_review'
+        where(:state => 'pending_review')
       end
 
       def spam
-        where :state => 'spam'
+        where(:state => 'spam')
       end
 
       def visible

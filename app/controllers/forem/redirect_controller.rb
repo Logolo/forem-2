@@ -12,9 +12,10 @@ class Forem::RedirectController < ApplicationController
         return redirect_to root_path, :notice => "Post does not exist" if post.topic == nil
         x = 0
 
-        posts = post.topic.posts
         if !forem_user || !forem_user.admin
-            posts = posts.approved
+            posts = post.topic.posts.approved
+        else
+            posts = post.topic.posts
         end
 
         posts.by_created_at.each_with_index do |p, i|
