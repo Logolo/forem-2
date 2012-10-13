@@ -42,12 +42,10 @@ module Forem
 
     delegate :forum, :to => :topic
 
-    after_create :set_topic_last_post_at
-    after_create :skip_pending_review_if_user_approved
-
     after_save :subscribe_replier, :if => Proc.new { |p| p.user && p.user.forem_auto_subscribe? }
     after_save :approve_user,   :if => :approved?
     after_save :blacklist_user, :if => :spam?
+    before_save :set_topic_last_post_at
 
     class << self
       def approved
@@ -106,6 +104,10 @@ module Forem
       state == 'approved'
     end
 
+    def skip_pending_review_if_user_approved
+      self.update_attribute(:state, 'approved') if user && user.forem_state == 'approved'
+    end
+
     protected
 
     def subscribe_replier
@@ -120,10 +122,6 @@ module Forem
 
     def set_topic_last_post_at
       self.topic.update_attribute(:last_post_at, self.created_at)
-    end
-
-    def skip_pending_review_if_user_approved
-      self.update_attribute(:state, 'approved') if user && user.forem_state == 'approved'
     end
 
     def approve_user

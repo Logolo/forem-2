@@ -19,12 +19,13 @@ module Forem
         redirect_to [@topic] and return
       end
       @post = @topic.posts.create(params[:post])
-      @post.user = forem_user
+      @post.user_id = forem_user.id
       if @post.save
+        @post.skip_pending_review_if_user_approved
         @topic.alert_subscribers(current_user.id)
         @topic.forum.increment_posts_count
         flash[:notice] = t("forem.post.created")
-        redirect_to topic_url(@topic, :page => last_page) + "#" + @post.id.to_s
+        redirect_to root_path + "/posts/" + @post.id
       else
         params[:reply_to_id] = params[:post][:reply_to_id]
         flash.now.alert = t("forem.post.not_created")
