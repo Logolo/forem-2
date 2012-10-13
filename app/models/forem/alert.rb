@@ -4,7 +4,7 @@ module Forem
     include Mongoid::Timestamps
     include ActionView::Helpers::DateHelper
 
-    field :read, :type => Boolean, :default => false, :index => true
+    field :read, :type => Boolean, :default => false
 
     field :created_at, :type => DateTime
     field :updated_at, :type => DateTime
@@ -16,7 +16,7 @@ module Forem
     belongs_to :forem_topic_post, :class_name => "Forem::Post"
 
     # Relations
-    belongs_to :subscription, :class_name => "Forem::Subscription", :index => true
+    belongs_to :subscription, :class_name => "Forem::Subscription"
     belongs_to :user, :index => true
 
     def link

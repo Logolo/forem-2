@@ -21,7 +21,7 @@ module Forem
 
     class << self
         def by_priority
-            order_by(:priority, :asc)
+            asc(:priority)
         end
     end
 
