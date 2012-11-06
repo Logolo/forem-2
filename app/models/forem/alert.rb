@@ -30,7 +30,7 @@ module Forem
           str += "posts/" + self.forem_topic_post_id.to_s
         end
       when "Friendship"
-        str += "/friendships?pending"
+        str += "/friendships/pending"
       else
         str
       end
