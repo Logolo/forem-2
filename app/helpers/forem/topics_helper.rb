@@ -1,7 +1,7 @@
 module Forem
   module TopicsHelper
     def link_to_latest_post(post)
-      text = "#{time_ago_in_words(post.created_at)} ago"
+      text = "#{time_ago_in_words(post.created_at, false, :vague => true)} ago"
       link_to text, root_path + "posts/" + post.id.to_s
     end
 

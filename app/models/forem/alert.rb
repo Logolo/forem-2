@@ -51,7 +51,7 @@ module Forem
       else
         str
       end
-      str += " " + time_ago_in_words(self.updated_at) + " ago"
+      str += " " + time_ago_in_words(self.updated_at, false, :vague => true) + " ago"
     end
   end
 
