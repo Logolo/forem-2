@@ -66,6 +66,7 @@ module Forem
         @post.destroy
       elsif can?(:hide, @post)
         @post.state = :hidden
+        @post.save
       end
 
       if @post.topic.posts.count == 0
