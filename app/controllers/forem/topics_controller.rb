@@ -18,7 +18,7 @@ module Forem
 
     def destroy
       @topic = @forum.topics.find(params[:id])
-      if forem_user == @topic.user || forem_user.forem_admin?
+      if can?(:delete, @topic)
         @topic.destroy
         flash[:notice] = t("forem.topic.deleted")
       else

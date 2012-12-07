@@ -14,10 +14,12 @@ module Forem
 
     def create
       authorize! :reply, @topic
-      if @topic.locked?
+
+      if !can?(:reply, @topic)
         flash.alert = t("forem.post.not_created_topic_locked")
         redirect_to [@topic] and return
       end
+
       @post = @topic.posts.create(params[:post])
       @post.user_id = forem_user.id
       if @post.save
@@ -59,21 +61,21 @@ module Forem
         flash.alert = t("forem.post.not_created_topic_locked")
         redirect_to [@topic] and return
       end
-      if @post.owner_or_admin?(forem_user)
-        @post.destroy
-        if @post.topic.posts.count == 0
+
+      if !can?(:delete, @post)
+        flash.alert = t("forem.post.cannot_delete")
+        redirect_to [@topic] and return
+      end
+
+      @post.destroy
+      if @post.topic.posts.count == 0
           @post.topic.destroy
           flash[:notice] = t("forem.post.deleted_with_topic")
           redirect_to [@topic.forum]
-        else
+      else
           flash[:notice] = t("forem.post.deleted")
           redirect_to [@topic]
-        end
-      else
-        flash[:alert] = t("forem.post.cannot_delete")
-        redirect_to [@topic]
       end
-
     end
 
     private

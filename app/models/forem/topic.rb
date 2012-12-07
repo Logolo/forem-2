@@ -103,9 +103,12 @@ module Forem
       send("#{option}!")
     end
 
-    # A Topic cannot be replied to if it's locked.
     def can_be_replied_to?
-      !locked?
+      !locked? && !archived? && forum.replyable
+    end
+
+    def archived?
+      self.last_post_at.to_i < 2.months.ago.to_i
     end
 
     protected
