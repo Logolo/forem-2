@@ -56,7 +56,7 @@ module Forem
       end
 
       # punishments
-      can :edit_punishments, Object do |obj|
+      can :edit_punishment, Object do |obj|
         user.has_group_permission?("can_edit_punishments")
       end
 
