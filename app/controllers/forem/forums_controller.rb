@@ -7,7 +7,7 @@ module Forem
 
     def index
       @categories = Forem::Category.all.order_by([:order, :asc])
-      @whatsnew = Forem::Topic.all.desc(:updated_at).page(params[:page]).per(20)
+      @whatsnew = Forem::Topic.all.by_most_recent_post.page(params[:page]).per(20)
     end
 
     def show
