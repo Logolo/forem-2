@@ -14,7 +14,7 @@ module Forem
 
       # forum
       can :read_forum, Forem::Forum do |forum|
-        forum.viewable || user.has_group_permission?("can_read")
+        forum.viewable || user.has_group_permission?("can_view")
       end
 
       can :read, Forem::Forum do |forum|
