@@ -62,12 +62,12 @@ module Forem
         redirect_to [@topic] and return
       end
 
-      if !can?(:delete, @post)
-        flash.alert = t("forem.post.cannot_delete")
-        redirect_to [@topic] and return
+      if can?(:delete, @post)
+        @post.destroy
+      elsif can?(:hide, @post)
+        @post.state = :hidden
       end
 
-      @post.destroy
       if @post.topic.posts.count == 0
           @post.topic.destroy
           flash[:notice] = t("forem.post.deleted_with_topic")

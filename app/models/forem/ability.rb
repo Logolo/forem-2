@@ -47,6 +47,10 @@ module Forem
         user.can_edit_forem_posts?(forum)
       end
 
+      can :hide, Forem::Post do |post|
+        post.user == user || user.forem_admin?
+      end
+
       can :delete, Forem::Post do |post|
         user.forem_admin?
       end
