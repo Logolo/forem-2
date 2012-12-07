@@ -18,7 +18,8 @@ module Forem
       alert = Forem::Alert.where(:subscription_id => self.id, :read => false).first
       case self.subscribable_type
       when "Forem::Topic"
-        return if !can?(:read, self.subscribable)
+        ability = Ability.new(self.subscriber)
+        return if !ability.can?(:read, self.subscribable)
         if alert == nil
           last_post = self.subscribable.posts.last
           return if last_post.user.id == self.subscriber_id
