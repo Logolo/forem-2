@@ -108,7 +108,7 @@ module Forem
     end
 
     def archived?
-      self.last_post_at.to_i < 2.months.ago.to_i
+      self.last_post_at.to_i < 2.months.ago.to_i && !pinned?
     end
 
     protected
