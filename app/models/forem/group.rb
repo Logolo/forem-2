@@ -12,6 +12,7 @@ module Forem
     field :can_create, :type => Boolean, :default => false
     field :can_reply, :type => Boolean, :default => false
     field :can_edit_punishments, :type => Boolean, :default => false
+    field :can_appeal, :type => Boolean, :default => false
 
     validates :name, :presence => true
 

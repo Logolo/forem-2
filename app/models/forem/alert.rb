@@ -31,6 +31,8 @@ module Forem
         end
       when "Friendship"
         str += "/friendships/pending"
+      when "Appeal"
+        str += "/appeals/" + self.subscription.subscribable.id.to_s
       else
         str
       end
@@ -48,6 +50,12 @@ module Forem
         str += " replied to " + self.subscription.subscribable.subject
       when "Friendship"
         str += self.subscription.subscribable.friender + " has requested to be your friend"
+      when "Appeal"
+        if self.subscription.subscribable.poster == user_id
+          str += "Your appeal has been updated by a staff member"
+        else
+          str += self.subscription.subscribable.poster + "'s appeal requires your attention"
+        end
       else
         str
       end
