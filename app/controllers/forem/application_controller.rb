@@ -13,7 +13,7 @@ class Forem::ApplicationController < ApplicationController
   end
 
   def calculate_online_users
-    users = Forem.user_class.where(:last_page_load.gt => 10.minutes.ago).limit(40)
+    users = Forem.user_class.where(:last_page_load.gt => 10.minutes.ago)
     max = 0
     @online_list = {}
 
