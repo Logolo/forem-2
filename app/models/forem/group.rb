@@ -18,7 +18,7 @@ module Forem
 
     field :members, :type => Array, :default => []
 
-    attr_accessible :name, :html_color, :badge_color, :mc_color, :mc_permissions, :priority, :can_view, :can_create, :can_reply, :can_edit_punishments
+    attr_accessible :name, :html_color, :badge_color, :mc_color, :mc_permissions, :priority, :can_view, :can_create, :can_reply, :can_edit_punishments, :can_appeal
 
     class << self
         def by_priority
